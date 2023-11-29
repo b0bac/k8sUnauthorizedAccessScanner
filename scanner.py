@@ -28,8 +28,11 @@ def write_log(content) -> None:
     with open("./running.log", 'a') as file_writer:
         content: str = str(content).replace("\n", "")
         message: str = "[%s] %s\n" % (timestamp, content)
-        file_writer.write(message)
-
+        try:
+            file_writer.write(message)
+        except Exception as error:
+            err_message: str = "[-][%s]Write log error!" % timestamp
+            file_writer.write(err_message)
 
 def k8s_apiserver_unauthorized_access_vulnerability_verify(target: str) -> None:
     """Judge the text of the response packet to see if target is vulnerable with apiserver!"""
@@ -72,6 +75,29 @@ def k8s_dashboard_unauthorized_access_vulnerability_verify(target: str) -> None:
             print("[*] [%s] The response content length is %s , please judge it by manual!" % (target, count))
     except Exception as error:
         write_log(error)
+
+
+def docker_registry_unauthorized_access_vulnerability_verify(target: str) -> None:
+    """Judge the text of the response packet to see if target is vulnerable with docker registry!"""
+    target: str = target + "/v2/_catalog" if target[-1] != "/" else target + "v2/_catalog"
+    try:
+        response: requests.Response = requests.get(target, verify=False, timeout=5)
+        if response.status_code == 200 and response.text.find("repositories") > 0 :
+            print("[+] [%s] has docker registry unauthorized access vulnerability!" % str(target))
+    except Exception as error:
+        write_log(error)
+
+
+def docker_remote_unauthorized_access_vulnerability_verify(target: str) -> None:
+    """Judge the text of the response packet to see if target is vulnerable with docker remote!"""
+    target: str = target + "/version" if target[-1] != "/" else target + "version"
+    try:
+        response: requests.Response = requests.get(target, verify=False, timeout=5)
+        if response.status_code == 200 and response.text.find("Platform") > 0 :
+            print("[+] [%s] has docker registry unauthorized access vulnerability!" % str(target))
+    except Exception as error:
+        write_log(error)
+
 
 
 # define k8s sacnner creater
@@ -136,6 +162,11 @@ class K8sScanner:
             self.scanner = K8sScannerCreater(k8s_etcd_unauthorized_access_vulnerability_verify, target, target_file, count)
         elif scan_vulnerability == "dashboard":
             self.scanner = K8sScannerCreater(k8s_dashboard_unauthorized_access_vulnerability_verify, target, target_file, count)
+        elif scan_vulnerability == "registry":
+            self.scanner = K8sScannerCreater(docker_registry_unauthorized_access_vulnerability_verify, target, target_file, count)
+        elif scan_vulnerability == "remote":
+            self.scanner = K8sScannerCreater(docker_remote_unauthorized_access_vulnerability_verify, target, target_file, count)
+
         else:
             pass
 
@@ -150,11 +181,11 @@ if __name__ == "__main__":
     parser = OptionParser("")
     parser.add_option("-t", dest="target", help="target to scan")
     parser.add_option("-f", dest="targetfile", help="target file to scan")
-    parser.add_option("-v", dest="scanvulnerability", help="vulnerability to scan? [apiserver | kubelet | etcd | dashboard]")
+    parser.add_option("-v", dest="scanvulnerability", help="vulnerability to scan? [apiserver | kubelet | etcd | dashboard | remote | registry]")
     parser.add_option("-c", dest="threadcount", help="count of thread?[10,15,20,25,30]")
     (options, args) = parser.parse_args()
-    if options.scanvulnerability not in ["apiserver", "kubelet", "etcd", "dashboard"]:
-        print("[-] Got unknown vulnerability name! Please choose from 'apiserver', 'kubelet', 'etcd', 'dashboard'!")
+    if options.scanvulnerability not in ["apiserver", "kubelet", "etcd", "dashboard", "remote", "registry"]:
+        print("[-] Got unknown vulnerability name! Please choose from 'apiserver', 'kubelet', 'etcd', 'dashboard', 'registry', 'remote'!")
         sys.exit(0)
     print("[+] Start to check %s!" % str(options.scanvulnerability) )
     options.threadcount = int(options.threadcount)
