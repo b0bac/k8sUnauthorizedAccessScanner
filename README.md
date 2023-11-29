@@ -1,6 +1,4 @@
 # K8s 未授权访问漏洞扫码器(K8sUnauthorizedAccessScanner)
-## 目录(Content)
-[toc]
 
 ## 支持的漏洞类型(Vulnerability Supported): 
 + 支持 Api Server 未授权访问漏洞检查(support scanning api server unauthorized access vulnerability)
@@ -33,3 +31,10 @@ python3 scanner.py -f apiserver_assests.txt -v etcd -c 30
 python3 scanner.py -t http://xx.xx.xx.xx:port/ -v dashboard
 python3 scanner.py -f apiserver_assests.txt -v dashboard -c 30
 ```
+![截图20231129170546984](https://github.com/b0bac/k8sUnauthorizedAccessScanner/assets/11972644/f556cad3-a28f-4532-a4e6-1cb43de0e868)
+
+
+
+## 运行日志(running log)
+运行日志会写入running.log(log will be written into the file 'running.log') 
+
