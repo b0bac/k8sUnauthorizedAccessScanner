@@ -4,6 +4,7 @@
 + 支持 Api Server 未授权访问漏洞检查(support scanning api server unauthorized access vulnerability)
 + 支持 Kubelet 未授权访问漏洞检查(support scanning kubelet unauthorized access vulnerability)
 + 支持 Etcd 未授权访问漏洞检查(support scanning etcd unauthorized access vulnerability)
++ 支持 Kube-Public Cluster-Info 未授权访问漏洞检查（(support scanning kube-public cluster-info unauthorized access vulnerability）
 + 支持 Dashboard 未授权访问漏洞检查(support scanning k8s dashboard unauthorized access vulnerability)
   + 该项仅支持显示响应报文头的 Content-Length 进而支持后续人工进行判断(Only support showing the content-length value in response packet header) 
 + 支持 docker remote 未授权访问漏洞检查(support scanning docker remote unauthorized access vulnerability)
@@ -29,6 +30,10 @@ python3 scanner.py -f kubelet_assests.txt -v kubelet -c 30
 python3 scanner.py -t http://xx.xx.xx.xx:port/ -v etcd
 python3 scanner.py -f etcd_assests.txt -v etcd -c 30
 
+# Cluster
+python3 scanner.py -t http://xx.xx.xx.xx:port/ -v cluster
+python3 scanner.py -f dashboard_assests.txt -v cluster -c 30
+
 # Dashboard
 python3 scanner.py -t http://xx.xx.xx.xx:port/ -v dashboard
 python3 scanner.py -f dashboard_assests.txt -v dashboard -c 30
@@ -37,7 +42,7 @@ python3 scanner.py -f dashboard_assests.txt -v dashboard -c 30
 python3 scanner.py -t http://xx.xx.xx.xx:port/ -v remote
 python3 scanner.py -f docker_assests.txt -v remote -c 30
 
-# Dashboard
+# Registry
 python3 scanner.py -t http://xx.xx.xx.xx:port/ -v registry
 python3 scanner.py -f docker_assests.txt -v registry -c 30
 ```
