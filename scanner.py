@@ -122,7 +122,6 @@ class K8sScannerCreater(object):
         self.thread_count: int = thread_count
         self.thread_size: int = 0
         self.thread_list: list = []
-        self.target_count: int = len(self.target_list)
         # start to handle target file
         if target_file is not None:
             try:
@@ -137,6 +136,7 @@ class K8sScannerCreater(object):
         elif target is not None:
             self.target_list.append(target)
         print("[+] Get targets finished!")
+        self.target_count: int = len(self.target_list)
 
     def verify(self) -> None:
         """Running verify functions with multi-thread!"""
