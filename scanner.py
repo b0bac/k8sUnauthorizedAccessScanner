@@ -120,7 +120,6 @@ class K8sScannerCreater(object):
         self.target_list: list = []
         self.function_name = function
         self.thread_count: int = thread_count
-        self.thread_size: int = 0
         self.thread_list: list = []
         # start to handle target file
         if target_file is not None:
@@ -136,7 +135,6 @@ class K8sScannerCreater(object):
         elif target is not None:
             self.target_list.append(target)
         print("[+] Get targets finished!")
-        self.target_count: int = len(self.target_list)
 
     def verify(self) -> None:
         """Running verify functions with multi-thread!"""
@@ -144,19 +142,29 @@ class K8sScannerCreater(object):
             print("[-] No targets to scan!")
             return
         print("[+] Start scanning! Totally %s targets!" % str(len(self.target_list)))
-        for target in self.target_list:
-            if self.thread_size < self.thread_count:
+        target_thread_pool_list: list = []
+        target_thread_list: list = []
+        for index, target in enumerate(self.target_list):
+            if target[-1] != "/":
+                target = target + "/"
+            if len(target_thread_list) < self.thread_maximum:
+                target_thread_list.append(target)
+            else:
+                target_thread_pool_list.append(target_thread_list)
+                target_thread_list = []
+                target_thread_list.append(target)
+            if index == len(self.target_list) - 1:
+                target_thread_pool_list.append(target_thread_list)
+        for targets in target_thread_pool_list:
+            for target in targets
                 thread = threading.Thread(target=self.function_name, args=(target,))
                 self.thread_list.append(thread)
-                self.thread_size += 1
-                self.target_count -= 1
-            if self.thread_size == self.thread_count or self.thread_szie == len(self.target_list) or self.target_count == 0:
-                for thread in self.thread_list:
-                    thread.start()
-                for thread in self.thread_list:
-                    thread.join()
-                self.thread_list = []
-                self.thread_size = 0
+            for thread in self.thread_list:
+                thread.start()
+            for thread in self.thread_list:
+                thread.join()
+            self.thread_list = []
+            self.thread_size = 0
 
 
 # define main class
