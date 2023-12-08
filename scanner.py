@@ -155,10 +155,6 @@ class K8sScannerCreater(object):
                     thread.join()
                 self.thread_list = []
                 self.thread_size = 0
-            else:
-                self.thread_list = []
-                self.thread_size = 0
-                continue
 
 
 # define main class
