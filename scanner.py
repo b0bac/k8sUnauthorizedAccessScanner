@@ -122,6 +122,7 @@ class K8sScannerCreater(object):
         self.thread_count: int = thread_count
         self.thread_size: int = 0
         self.thread_list: list = []
+        self.target_count: int = len(self.target_list)
         # start to handle target file
         if target_file is not None:
             try:
@@ -148,7 +149,8 @@ class K8sScannerCreater(object):
                 thread = threading.Thread(target=self.function_name, args=(target,))
                 self.thread_list.append(thread)
                 self.thread_size += 1
-            if self.thread_size == self.thread_count or self.thread_szie == len(self.target_list):
+                self.target_count -= 1
+            if self.thread_size == self.thread_count or self.thread_szie == len(self.target_list) or self.target_count == 0:
                 for thread in self.thread_list:
                     thread.start()
                 for thread in self.thread_list:
